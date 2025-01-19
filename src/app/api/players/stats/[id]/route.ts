@@ -1,32 +1,43 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = createRouteHandlerClient({ cookies })
 
-    const { data: player, error } = await supabase
+    // 플레이어 기본 정보 조회
+    const { data: player, error: playerError } = await supabase
       .from('players')
-      .select('id, auth_id, name, rating, matches_played, wins, losses')
+      .select('*')
       .eq('id', params.id)
       .single()
 
-    if (error) {
-      console.error('플레이어 조회 에러:', error)
-      return NextResponse.json(
-        { error: '플레이어 조회 실패' },
-        { status: 500 }
-      )
-    }
+    if (playerError) throw playerError
 
-    return NextResponse.json(player)
+    // 승률, 평균 점수 등 추가 통계 계산
+    const { data: matches, error: matchesError } = await supabase
+      .from('matches')
+      .select('*')
+      .or(`player1_id.eq.${params.id},player2_id.eq.${params.id}`)
+
+    if (matchesError) throw matchesError
+
+    // 통계 계산 로직...
+
+    return NextResponse.json({
+      player,
+      matches,
+      // 추가 통계...
+    })
 
   } catch (error) {
-    console.error('서버 에러:', error)
+    console.error('Error fetching player stats:', error)
     return NextResponse.json(
-      { error: '서버 에러' },
+      { error: 'Failed to fetch player statistics' },
       { status: 500 }
     )
   }
