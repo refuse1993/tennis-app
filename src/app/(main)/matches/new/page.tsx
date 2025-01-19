@@ -103,48 +103,60 @@ export default function NewMatchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    const validationError = validatePlayerSelection()
-    if (validationError) {
-      setError(validationError)
-      return
-    }
-
     setIsSubmitting(true)
     setError(null)
-
+  
     try {
-      const setsWonA = formData.sets.filter(
-        set => parseInt(set.team_a) > parseInt(set.team_b)
+      // 세트 승자 계산
+      const setsWonA = formData.sets.filter(set => 
+        parseInt(set.team_a) > parseInt(set.team_b)
       ).length
-      const setsWonB = formData.sets.filter(
-        set => parseInt(set.team_b) > parseInt(set.team_a)
+      const setsWonB = formData.sets.filter(set => 
+        parseInt(set.team_b) > parseInt(set.team_a)
       ).length
-      const winnerTeam = setsWonA > setsWonB ? 'A' : 'B'
-
-      const { error: insertError } = await supabase
+  
+      const matchData = {
+        match_date: formData.match_date,
+        team_a_player1_id: formData.team_a.player1_id,
+        team_a_player2_id: formData.team_a.player2_id,
+        team_b_player1_id: formData.team_b.player1_id,
+        team_b_player2_id: formData.team_b.player2_id,
+        team_a_sets: formData.sets.map(set => set.team_a),
+        team_b_sets: formData.sets.map(set => set.team_b),
+        winner_team: setsWonA > setsWonB ? 'A' : 'B',
+        match_type: formData.match_type,
+        notes: formData.notes || ''
+      }
+  
+      console.log('전송할 데이터:', {
+        ...matchData,
+        team_a_sets_type: typeof matchData.team_a_sets,
+        team_b_sets_type: typeof matchData.team_b_sets,
+        team_a_player1_id_type: typeof matchData.team_a_player1_id,
+        sets_content: formData.sets
+      })
+  
+      const { data, error: insertError } = await supabase
         .from('matches')
-        .insert([
-          {
-            match_date: formData.match_date,
-            team_a_player1_id: formData.team_a.player1_id,
-            team_a_player2_id: formData.team_a.player2_id,
-            team_b_player1_id: formData.team_b.player1_id,
-            team_b_player2_id: formData.team_b.player2_id,
-            team_a_sets: formData.sets.map(set => set.team_a),
-            team_b_sets: formData.sets.map(set => set.team_b),
-            winner_team: winnerTeam,
-            match_type: formData.match_type,
-            notes: formData.notes
-          }
-        ])
-
-      if (insertError) throw insertError
-
+        .insert([matchData])
+        .select()
+  
+      if (insertError) {
+        console.error('Supabase 에러 상세:', {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+          data: matchData
+        })
+        throw insertError
+      }
+  
+      console.log('저장 성공:', data)
       router.push('/dashboard')
     } catch (err) {
-      console.error('매치 저장 에러:', err)
-      setError(err instanceof Error ? err.message : '매치 저장 중 오류가 발생했습니다')
+      console.error('전체 에러:', err)
+      setError('매치 저장 중 오류가 발생했습니다')
     } finally {
       setIsSubmitting(false)
     }
@@ -184,116 +196,116 @@ export default function NewMatchPage() {
           />
         </div>
 
-            {/* 팀 A */}
-        <div className="bg-blue-50 p-4 rounded">
-          <h3 className="font-medium mb-4">팀 A</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">선수 1</label>
-              <select
-                required
-                className="w-full p-2 border rounded"
-                value={formData.team_a.player1_id}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  team_a: { ...prev.team_a, player1_id: e.target.value }
-                }))}
-              >
-                <option value="">선수 선택</option>
-                {players
-                  .filter(p => 
-                    p.id !== formData.team_a.player2_id && 
-                    p.id !== formData.team_b.player1_id && 
-                    p.id !== formData.team_b.player2_id
-                  )
-                  .map(player => (
-                    <option key={player.id} value={player.id}>
-                      {player.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">선수 2</label>
-              <select
-                required
-                className="w-full p-2 border rounded"
-                value={formData.team_a.player2_id}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  team_a: { ...prev.team_a, player2_id: e.target.value }
-                }))}
-              >
-                <option value="">선수 선택</option>
-                {players
-                  .filter(p => 
-                    p.id !== formData.team_a.player1_id && 
-                    p.id !== formData.team_b.player1_id && 
-                    p.id !== formData.team_b.player2_id
-                  )
-                  .map(player => (
-                    <option key={player.id} value={player.id}>
-                      {player.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
+         {/* 팀 A */}
+    <div className="bg-blue-50 p-4 rounded">
+      <h3 className="font-medium mb-4">팀 A</h3>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">선수 1</label>
+          <select
+            required
+            className="w-full p-2 border rounded"
+            value={formData.team_a.player1_id}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              team_a: { ...prev.team_a, player1_id: e.target.value }
+            }))}
+          >
+            <option value="">선수 선택</option>
+            {players
+              .filter(p => 
+                p.id !== formData.team_a.player2_id && 
+                p.id !== formData.team_b.player1_id && 
+                p.id !== formData.team_b.player2_id
+              )
+              .map(player => (
+                <option key={player.id} value={player.id}>
+                  {player.name}
+                </option>
+              ))}
+          </select>
         </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">선수 2</label>
+          <select
+            required
+            className="w-full p-2 border rounded"
+            value={formData.team_a.player2_id}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              team_a: { ...prev.team_a, player2_id: e.target.value }
+            }))}
+          >
+            <option value="">선수 선택</option>
+            {players
+              .filter(p => 
+                p.id !== formData.team_a.player1_id && 
+                p.id !== formData.team_b.player1_id && 
+                p.id !== formData.team_b.player2_id
+              )
+              .map(player => (
+                <option key={player.id} value={player.id}>
+                  {player.name}
+                </option>
+              ))}
+          </select>
+        </div>
+      </div>
+    </div>
 
-        {/* 팀 B */}
-        <div className="bg-red-50 p-4 rounded">
-          <h3 className="font-medium mb-4">팀 B</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">선수 1</label>
-              <select
-                required
-                className="w-full p-2 border rounded"
-                value={formData.team_b.player1_id}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  team_b: { ...prev.team_b, player1_id: e.target.value }
-                }))}
-              >
-                <option value="">선수 선택</option>
-                {players
-                  .filter(p => 
-                    p.id !== formData.team_a.player1_id && 
-                    p.id !== formData.team_a.player2_id && 
-                    p.id !== formData.team_b.player2_id
-                  )
-                  .map(player => (
-                    <option key={player.id} value={player.id}>
-                      {player.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">선수 2</label>
-              <select
-                required
-                className="w-full p-2 border rounded"
-                value={formData.team_b.player2_id}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  team_b: { ...prev.team_b, player2_id: e.target.value }
-                }))}
-              >
-                <option value="">선수 선택</option>
-                {players
-                  .filter(p => 
-                    p.id !== formData.team_a.player1_id && 
-                    p.id !== formData.team_a.player2_id && 
-                    p.id !== formData.team_b.player1_id
-                  )
-                  .map(player => (
-                    <option key={player.id} value={player.id}>
-                      {player.name}
-                    </option>
-                  ))}
-              </select>
+    {/* 팀 B */}
+    <div className="bg-red-50 p-4 rounded">
+      <h3 className="font-medium mb-4">팀 B</h3>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">선수 1</label>
+          <select
+            required
+            className="w-full p-2 border rounded"
+            value={formData.team_b.player1_id}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              team_b: { ...prev.team_b, player1_id: e.target.value }
+            }))}
+          >
+            <option value="">선수 선택</option>
+            {players
+              .filter(p => 
+                p.id !== formData.team_a.player1_id && 
+                p.id !== formData.team_a.player2_id && 
+                p.id !== formData.team_b.player2_id
+              )
+              .map(player => (
+                <option key={player.id} value={player.id}>
+                  {player.name}
+                </option>
+              ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">선수 2</label>
+          <select
+            required
+            className="w-full p-2 border rounded"
+            value={formData.team_b.player2_id}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              team_b: { ...prev.team_b, player2_id: e.target.value }
+            }))}
+          >
+            <option value="">선수 선택</option>
+            {players
+              .filter(p => 
+                p.id !== formData.team_a.player1_id && 
+                p.id !== formData.team_a.player2_id && 
+                p.id !== formData.team_b.player1_id
+              )
+              .map(player => (
+                <option key={player.id} value={player.id}>
+                  {player.name}
+                </option>
+              ))}
+          </select>
             </div>
           </div>
         </div>

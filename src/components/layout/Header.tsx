@@ -42,6 +42,7 @@ export default function Header() {
     }
   }
 
+
   return (
     <header className="bg-white dark:bg-gray-900">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
@@ -57,9 +58,13 @@ export default function Header() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <span className="sr-only">메뉴 열기</span>
-            {/* 햄버거 메뉴 아이콘 */}
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
         </div>
+        
+        {/* 데스크톱 메뉴 */}
         <div className="hidden lg:flex lg:gap-x-12">
           <Link 
             href="/dashboard" 
@@ -79,6 +84,12 @@ export default function Header() {
           >
             랭킹
           </Link>
+          <Link 
+            href="/profile" 
+            className="text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            내정보
+          </Link>
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
           <button
@@ -94,6 +105,60 @@ export default function Header() {
             로그아웃
           </button>
         </div>
+
+        {/* 모바일 메뉴 */}
+        {isMenuOpen && (
+          <div className="lg:hidden absolute top-16 left-0 w-full bg-white dark:bg-gray-900 shadow-lg">
+            <div className="space-y-1 px-4 pb-3 pt-2">
+              <Link
+                href="/dashboard"
+                className="block px-3 py-2 text-base font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                대시보드
+              </Link>
+              <Link
+                href="/matches/new"
+                className="block px-3 py-2 text-base font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                매치 등록
+              </Link>
+              <Link
+                href="/rankings"
+                className="block px-3 py-2 text-base font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                랭킹
+              </Link>
+              <Link
+                href="/profile"
+                className="block px-3 py-2 text-base font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                내정보
+              </Link>
+              <button
+                onClick={() => {
+                  setTheme(theme === 'dark' ? 'light' : 'dark')
+                  setIsMenuOpen(false)
+                }}
+                className="block w-full text-left px-3 py-2 text-base font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                {theme === 'dark' ? '라이트 모드' : '다크 모드'}
+              </button>
+              <button
+                onClick={() => {
+                  handleLogout()
+                  setIsMenuOpen(false)
+                }}
+                className="block w-full text-left px-3 py-2 text-base font-medium text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400"
+              >
+                로그아웃
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
     </header>
   )
