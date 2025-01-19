@@ -3,9 +3,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { User } from '@supabase/supabase-js' // Supabase User 타입 임포트
 
 interface AuthContextType {
-  user: any | null
+  user: User | null // User 타입으로 변경
   loading: boolean
 }
 
@@ -15,7 +16,7 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any | null>(null)
+  const [user, setUser] = useState<User | null>(null) // User 타입으로 변경
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 

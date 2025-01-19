@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+// import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import StatsCard from '@/components/dashboard/StatsCard'
 import RecentMatches from '@/components/dashboard/RecentMatches'
 import QuickActions from '@/components/dashboard/QuickActions'

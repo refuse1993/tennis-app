@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import type { AuthState, UserProfile } from '@/types/auth'
+import type { AuthState } from '@/types/auth'
 
 interface AuthContextType extends AuthState {
   signOut: () => Promise<void>

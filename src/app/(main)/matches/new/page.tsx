@@ -81,25 +81,25 @@ export default function NewMatchPage() {
     }
   }
 
-  // 선수 선택이 유효한지 확인
-  const validatePlayerSelection = () => {
-    const selectedPlayers = [
-      formData.team_a.player1_id,
-      formData.team_a.player2_id,
-      formData.team_b.player1_id,
-      formData.team_b.player2_id
-    ]
+  // // 선수 선택이 유효한지 확인
+  // const validatePlayerSelection = () => {
+  //   const selectedPlayers = [
+  //     formData.team_a.player1_id,
+  //     formData.team_a.player2_id,
+  //     formData.team_b.player1_id,
+  //     formData.team_b.player2_id
+  //   ]
     
-    if (selectedPlayers.some(id => !id)) {
-      return '모든 선수를 선택해주세요.'
-    }
+  //   if (selectedPlayers.some(id => !id)) {
+  //     return '모든 선수를 선택해주세요.'
+  //   }
     
-    if (new Set(selectedPlayers).size !== 4) {
-      return '같은 선수를 중복 선택할 수 없습니다.'
-    }
+  //   if (new Set(selectedPlayers).size !== 4) {
+  //     return '같은 선수를 중복 선택할 수 없습니다.'
+  //   }
     
-    return null
-  }
+  //   return null
+  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
