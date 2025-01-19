@@ -20,18 +20,40 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
+      console.log('로그인 시도:', formData.email) // 디버깅
+
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       })
+
+      console.log('Supabase 응답:', { data, error: signInError }) // 디버깅
 
       if (signInError) {
         throw signInError
       }
 
       if (data?.user) {
-        await new Promise(resolve => setTimeout(resolve, 500))
-        window.location.href = '/dashboard'
+        console.log('로그인 성공, 사용자:', data.user) // 디버깅
+        
+        // 세션 확인
+        const { data: { session } } = await supabase.auth.getSession()
+        console.log('현재 세션:', session) // 디버깅
+
+        // 쿠키 설정을 위해 서버에 세션 정보 전달
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ session: data.session }),
+        })
+
+        if (response.ok) {
+          window.location.href = '/dashboard'
+        } else {
+          setError('세션 설정에 실패했습니다.')
+        }
       }
     } catch (err) {
       console.error('로그인 에러:', err)
@@ -40,7 +62,7 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
-
+  
   return (
     <div className="w-full max-w-md space-y-8">
       <div>
