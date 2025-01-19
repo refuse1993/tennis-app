@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 // import { ko } from 'date-fns/locale'
@@ -20,7 +21,11 @@ interface Match {
   team_b_sets: number
 }
 
-export default function RecentMatches() {
+interface RecentMatchesProps {
+  playerId: string | undefined;
+}
+
+const RecentMatches: React.FC<RecentMatchesProps> = ({ playerId }) => {
   const [matches, setMatches] = useState<Match[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -113,3 +118,5 @@ export default function RecentMatches() {
     </div>
   )
 }
+
+export default RecentMatches
