@@ -9,4 +9,10 @@ const nextConfig: NextConfig = {
 },
 };
 
+module.exports = {
+  images: {
+    domains: ['izuitzvmayfqoswqdeqt.supabase.co'], // 이미지 호스트 추가
+  },
+};
+
 export default nextConfig;

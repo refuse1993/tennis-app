@@ -1,23 +1,38 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import type { Session } from '@supabase/supabase-js'
 
 export async function POST(request: Request) {
   try {
-    const { session } = await request.json()
+    const { session }: { session: Session } = await request.json()
     
-    // 쿠키에 세션 정보 저장
+    if (!session?.access_token || !session?.refresh_token) {
+      return NextResponse.json(
+        { error: 'Invalid session data' },
+        { status: 400 }
+      )
+    }
+
     const cookieStore = cookies()
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
     
-    await supabase.auth.setSession(session)
+    const { data, error } = await supabase.auth.setSession(session)
+    
+    if (error) {
+      throw error
+    }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      success: true,
+      user: data.user
+    })
+
   } catch (error) {
     console.error('Login API error:', error)
     return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
+      { error: 'Authentication failed' },
+      { status: 401 }
     )
   }
 }
