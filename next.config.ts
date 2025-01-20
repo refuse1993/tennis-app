@@ -1,18 +1,14 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-      /* ignore build errors */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // ESLint 빌드 오류 무시 설정
   ignoreBuildErrors: true,
   eslint: {
     ignoreDuringBuilds: true,
-},
-};
-
-module.exports = {
+  },
+  // 이미지 도메인 설정
   images: {
-    domains: ['izuitzvmayfqoswqdeqt.supabase.co'], // 이미지 호스트 추가
+    domains: ['izuitzvmayfqoswqdeqt.supabase.co'],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
