@@ -133,7 +133,7 @@ export default function PlayerProfilePage() {
 
 				<TabsContent value="matches">
 					{player?.id ? (
-						<RecentMatches playerId={player.id} />
+						<RecentMatches />
 					) : (
 						<div className="text-center text-gray-500">플레이어 데이터를 불러오는 중입니다.</div>
 					)}
