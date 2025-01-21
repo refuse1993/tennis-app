@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import RecentMatches from '@/components/dashboard/RecentMatches';
+import RecentMatches from '@/components/dashboard/RecentMatchesUser';
 
 interface Player {
 	id: string;
