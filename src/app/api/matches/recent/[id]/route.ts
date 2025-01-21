@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
-	const { id: playerId } = params;
+	const { id: playerId } = await params;
 
 	// playerId가 없을 경우 에러 반환
 	if (!playerId) {
