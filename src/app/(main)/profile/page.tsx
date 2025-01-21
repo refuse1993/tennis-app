@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import RecentMatches from '@/components/dashboard/RecentMatchesUser';
+import RecentMatches from '@/components/dashboard/RecentMatches';
 
 interface Player {
 	id: string;
@@ -133,7 +133,7 @@ export default function PlayerProfilePage() {
 
 				<TabsContent value="matches">
 					{player?.id ? (
-						<RecentMatches />
+						<RecentMatches playerId={player?.id} />
 					) : (
 						<div className="text-center text-gray-500">플레이어 데이터를 불러오는 중입니다.</div>
 					)}

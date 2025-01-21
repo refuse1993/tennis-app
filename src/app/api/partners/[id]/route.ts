@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-export async function GET(req: Request, { params }: { params: { playerId: string } }) {
-	const { playerId } = params;
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+	const { id: playerId } = params;
 
 	console.log('Received playerId:', playerId); // 디버깅
 	if (!playerId) {
