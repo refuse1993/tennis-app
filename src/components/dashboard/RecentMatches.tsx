@@ -22,35 +22,34 @@ interface Match {
 }
 
 interface RecentMatchesProps {
-	playerId: string | undefined; // undefined를 허용
+	playerId: string | undefined;
 }
 
 const RecentMatches: React.FC<RecentMatchesProps> = ({ playerId }) => {
 	const [matches, setMatches] = useState<Match[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!playerId) {
-			console.error('playerId가 없습니다!');
-			setIsLoading(false); // 로딩 상태 종료
-			return;
-		}
-		setCurrentUserId(playerId);
+		const fetchMatches = async () => {
+			if (!playerId) {
+				console.error('playerId가 제공되지 않았습니다.');
+				setIsLoading(false);
+				return;
+			}
 
-		fetch(`/api/matches/recent/${playerId}`)
-			.then((res) => res.json())
-			.then((data) => {
-				console.log('API 응답 데이터:', data);
-				setMatches(data); // 데이터 설정
-			})
-			.catch((error) => {
-				console.error('API 요청 실패:', error);
-			})
-			.finally(() => {
-				setIsLoading(false); // 로딩 상태 종료
-			});
-	}, [playerId]);
+			try {
+				const response = await fetch(`/api/matches/recent/${playerId}`);
+				const data = await response.json();
+				setMatches(Array.isArray(data) ? data : []);
+			} catch (error) {
+				console.error('매치 로딩 에러:', error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchMatches();
+	}, [playerId]); // playerId만 의존성으로 설정
 
 	if (isLoading) {
 		return (
@@ -83,10 +82,9 @@ const RecentMatches: React.FC<RecentMatchesProps> = ({ playerId }) => {
 							userWin ? 'border-2 border-green-500' : userTeam ? 'border-2 border-red-500' : ''
 						}`}
 					>
-						{/* 날짜와 승패 */}
 						<div className="flex justify-between items-center mb-1.5">
 							<span className="text-[10px] text-gray-500">
-								{format(new Date(match.created_at), 'M.d HH:mm')}
+								{format(new Date(match.created_at), 'M.d HH:mm', { locale: ko })}
 							</span>
 							{userTeam ? (
 								<span
@@ -105,7 +103,6 @@ const RecentMatches: React.FC<RecentMatchesProps> = ({ playerId }) => {
 							)}
 						</div>
 
-						{/* 스코어 */}
 						<div className="flex justify-center items-center my-1.5">
 							<div
 								className={`text-lg font-bold ${
@@ -128,7 +125,6 @@ const RecentMatches: React.FC<RecentMatchesProps> = ({ playerId }) => {
 							</div>
 						</div>
 
-						{/* 팀 정보 */}
 						<div className="text-center text-[11px] leading-tight">
 							<div
 								className={`${

@@ -1,4 +1,4 @@
-'use client';
+'use client'; // 클라이언트 컴포넌트로 지정
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -20,13 +20,14 @@ interface Player {
 	created_at: string;
 }
 
-export default function UserProfilePage({ params }: { params: { id: string } }) {
+export default function UUserProfilePage({ params }: { params: { id: string } }) {
 	const [player, setPlayer] = useState<Player | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchPlayer = async () => {
+			setIsLoading(true); // 로딩 상태 시작
 			try {
 				const { data, error } = await supabase.from('players').select('*').eq('id', params.id).single();
 
@@ -39,12 +40,12 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 				console.error('사용자 정보 로드 실패:', error);
 				setError('사용자 정보를 불러오는 중 오류가 발생했습니다.');
 			} finally {
-				setIsLoading(false);
+				setIsLoading(false); // 로딩 상태 종료
 			}
 		};
 
 		fetchPlayer();
-	}, [params.id]);
+	}, [params.id]); // params.id만 의존성으로 설정
 
 	if (isLoading) {
 		return (
@@ -63,8 +64,6 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 
 	return (
 		<div className="container mx-auto px-4 py-8">
-			{/* 프로필 헤더 */}
-			{/* 프로필 헤더 */}
 			<Card className="mb-4 bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-md">
 				<div className="p-4 flex items-center">
 					<div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white">
@@ -89,7 +88,6 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 				</div>
 			</Card>
 
-			{/* 탭 메뉴 */}
 			<Tabs defaultValue="overview" className="mb-6">
 				<TabsList>
 					<TabsTrigger value="overview">개요</TabsTrigger>
@@ -109,16 +107,15 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 					</div>
 				</TabsContent>
 
+				<TabsContent value="matches">
+					<RecentMatches playerId={player?.id} />
+				</TabsContent>
+
 				<TabsContent value="stats">
 					<div className="grid grid-cols-1 gap-4">
 						<h2 className="text-xl font-semibold">복식 최고의 파트너</h2>
 						<PartnerCard playerId={player?.id} />
 					</div>
-				</TabsContent>
-
-				<TabsContent value="matches">
-					{/* RecentMatches에 선택된 사용자 ID 전달 */}
-					<RecentMatches playerId={player?.id} />
 				</TabsContent>
 			</Tabs>
 		</div>
